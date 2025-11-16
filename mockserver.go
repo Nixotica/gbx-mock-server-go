@@ -42,7 +42,6 @@ type MockServer struct {
 	responses   map[string]interface{}
 	methodCalls []MethodCall
 	mutex       sync.RWMutex
-	running     bool
 }
 
 // Config holds configuration for the mock server
@@ -168,7 +167,6 @@ func (s *MockServer) Start() error {
 	}
 
 	s.listener = listener
-	s.running = true
 
 	go s.acceptConnections()
 	return nil
@@ -176,7 +174,6 @@ func (s *MockServer) Start() error {
 
 // Stop stops the mock server
 func (s *MockServer) Stop() error {
-	s.running = false
 	if s.listener != nil {
 		return s.listener.Close()
 	}
@@ -194,13 +191,10 @@ func (s *MockServer) Address() string {
 }
 
 func (s *MockServer) acceptConnections() {
-	for s.running {
+	for {
 		conn, err := s.listener.Accept()
 		if err != nil {
-			if s.running {
-				fmt.Printf("Error accepting connection: %v\n", err)
-			}
-			continue
+			return // Listener closed
 		}
 		go s.handleConnection(conn)
 	}
