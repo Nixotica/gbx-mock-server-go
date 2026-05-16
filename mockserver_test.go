@@ -271,10 +271,10 @@ func TestMockServerMethodTracking(t *testing.T) {
 		}
 
 		if len(call.Params) >= 2 {
-			if call.Params[0] != "Trackmania.Pause.SetActive" {
+			if s, _ := call.Params[0].AsString(); s != "Trackmania.Pause.SetActive" {
 				t.Errorf("Expected first param 'Trackmania.Pause.SetActive', got '%v'", call.Params[0])
 			}
-			if call.Params[1] != "true" {
+			if s, _ := call.Params[1].AsString(); s != "true" {
 				t.Errorf("Expected second param 'true', got '%v'", call.Params[1])
 			}
 		}
